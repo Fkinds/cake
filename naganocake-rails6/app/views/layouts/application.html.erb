@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>NaganoCake</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+
+
+  <header>
+    <% if request.path.match(/\/admin(\/)?/) %>
+      <%= render "admin/customers/header" %>
+      <%= form_with url: admin_items_path, method: :get do |f| %>
+        <%= f.text_field :search %>
+        <%= f.submit "検索" %>
+      <% end %>
+    <% else %>
+      <%= render "public/customers/header" %>
+      <%= form_with url: items_path, method: :get do |f| %>
+        <%= f.text_field :search %>
+        <%= f.submit "検索" %>
+      <% end %>
+    <% end %>
+  </header>
+  <body>
+    <%= yield %>
+  </body>
+</html>
