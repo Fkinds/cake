@@ -6,11 +6,14 @@ class Public::OrdersController < ApplicationController
   end
 
   def confirm
-      @postage = 800
-      @sum = 0
-      @total_payment = @postage.to_i + @sum.to_i
-      @cart_items = current_customer.cart_items.all
-      @order = Order.new(order_params)
+    @postage = 800
+    @sum = 0
+    @total_payment = @postage.to_i + @sum.to_i
+    @cart_items = current_customer.cart_items.all
+    @order = Order.new(order_params)
+    if @order.invalid?
+      redirect_to new_order_path 
+    end 
     if params[:order][:address_select] == "0"
       @order.name = params[:order][:family_name] + params[:order][:given_name]
       @order.address = params[:order][:current_customer_address]
@@ -29,14 +32,17 @@ class Public::OrdersController < ApplicationController
 
   def create
     @order = current_customer.orders.new(order_params)
-    @order.save!
-    current_customer.cart_items.each do |cart_item|
-      @order_detail = OrderDetail.new
-      @order_detail.order_id = @order.id
-      @order_detail.item_id = cart_item.item_id
-      @order_detail.amount = cart_item.amount
-      @order_detail.price = cart_item.item.tax_price
-      @order_detail.save!
+    if @order.save!
+      current_customer.cart_items.each do |cart_item|
+        @order_detail = OrderDetail.new
+        @order_detail.order_id = @order.id
+        @order_detail.item_id = cart_item.item_id
+        @order_detail.amount = cart_item.amount
+        @order_detail.price = cart_item.item.tax_price
+        @order_detail.save!
+      end
+    else
+      render :new
     end
     cart_items = current_customer.cart_items
     cart_items.destroy_all

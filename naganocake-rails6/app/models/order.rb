@@ -2,6 +2,11 @@ class Order < ApplicationRecord
   has_many :order_details
   belongs_to :customer
   
+  # validates :name, presence: true
+  # validates :address, presence: true
+  # validates :zip_code, presence: true
+  
+  
   enum payment_method: {
     credit_card: 0,
     transfer: 1
