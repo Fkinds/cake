@@ -11,9 +11,7 @@ class Public::OrdersController < ApplicationController
     @total_payment = @postage.to_i + @sum.to_i
     @cart_items = current_customer.cart_items.all
     @order = Order.new(order_params)
-    if @order.invalid?
-      redirect_to new_order_path 
-    end 
+    @order.customer = current_customer
     if params[:order][:address_select] == "0"
       @order.name = params[:order][:family_name] + params[:order][:given_name]
       @order.address = params[:order][:current_customer_address]
@@ -23,6 +21,10 @@ class Public::OrdersController < ApplicationController
       @order.zip_code = receive_address.zip_code
       @order.name = receive_address.name
       @order.address = receive_address.address
+    end
+    #if from_new_to_confirm_strparams.invalid?
+    if @order.invalid?
+      redirect_to new_order_path
     end
   end
 
@@ -68,4 +70,8 @@ class Public::OrdersController < ApplicationController
   def order_params
     params.require(:order).permit(:zip_code, :address, :name, :payment_method, :postage, :total_payment)
   end
+
+  #def from_new_to_confirm_strparams
+    #params.require(:order).permit(:address,:zip_code,:name)
+  #end
 end
